@@ -11,4 +11,29 @@ const validateSignUpData = (req) => {
   }
 };
 
-module.exports = { validateSignUpData };
+const validateEditData = (req) => {
+  const ALLOWED_UPDATES = [
+    "firstName",
+    "lastName",
+    "photoUrl",
+    "about",
+    "gender",
+    "age",
+    "skills",
+  ];
+  const isAllowed = Object.keys(req.body).every((field) =>
+    ALLOWED_UPDATES.includes(field)
+  );
+  return isAllowed;
+};
+
+const validatePasswordData = (req) => {
+  const { password, newPassword } = req.body;
+  if (!password || !newPassword) {
+    throw new Error("Fields are required");
+  }
+  if (!validator.isStrongPassword(newPassword)) {
+    throw new Error("Please enter a strong password!");
+  }
+};
+module.exports = { validateSignUpData, validateEditData, validatePasswordData };

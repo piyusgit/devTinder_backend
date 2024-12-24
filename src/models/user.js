@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -40,11 +42,15 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       lowercase: true,
-      validate(value) {
-        if (!["male", "female", "other"].includes(value)) {
-          throw new Error("Invalid Gender");
-        }
+      enum: {
+        values: ["male", "female", "other"],
+        message: "{VALUE} is not a valid gender type",
       },
+      // validate(value) {
+      //   if (!["male", "female", "other"].includes(value)) {
+      //     throw new Error("Invalid Gender");
+      //   }
+      // },
     },
     photoUrl: {
       type: String,
@@ -62,7 +68,7 @@ const userSchema = new mongoose.Schema(
     about: {
       type: String,
       default: "This is the default description of the user!",
-      minLength: 30,
+      minLength: 20,
       maxLength: 200,
     },
   },
@@ -70,6 +76,27 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Schema Methods for Getting JWT Tokens
+userSchema.methods.getJWT = async function () {
+  const user = this;
+  const token = await jwt.sign(
+    {
+      _id: user._id,
+    },
+    "Cricket",
+    { expiresIn: "7d" }
+  );
+  return token;
+};
+
+// Schema Methods for Hashing Password
+
+userSchema.methods.validatePassword = async function (inputPassword) {
+  const user = this;
+  const isPasswordMatch = await bcrypt.compare(inputPassword, user.password);
+  return isPasswordMatch;
+};
 
 const User = mongoose.model("user", userSchema);
 

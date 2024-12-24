@@ -1,18 +1,26 @@
 const express = require("express");
-// const { adminAuth, userAuth } = require("./middlewares/auth");
 
 const connectDB = require("./config/database");
 const User = require("./models/user");
 const app = express();
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
-const { validateSignUpData } = require("./utils/validation");
-const bcrypt = require("bcrypt");
 /* The `app.use(express.json());` line in the code snippet is setting up middleware in Express to parse
 incoming requests with JSON payloads. This middleware function parses incoming request bodies and
 makes the parsed JSON data available on the `req.body` property of the request object. This is
 commonly used to handle JSON data sent in POST requests, allowing you to access and work with the
 JSON data in your Express routes. */
 app.use(express.json());
+app.use(cookieParser());
+
+const { authRouter } = require("./routes/authRoute");
+const { profileRouter } = require("./routes/profile");
+const { requestRouter } = require("./routes/request");
+
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
 // Example of use of next function in express----
 
 // app.use(
@@ -89,56 +97,6 @@ app.get("/user", userAuth, (req, res) => {
 app.get("/admin/deleteUser", (req, res) => {
   res.send("Hello from express server, Deleting the user!");
 }); */
-
-app.post("/signup", async (req, res) => {
-  // const user = new User({
-  //   firstName: "John",
-  //   lastName: "Doe",
-  //   emailId: "demo@example.com",
-  //   password: "demo@example.com",
-  // });
-  try {
-    // Validating the data
-    validateSignUpData(req);
-
-    const { firstName, lastName, emailId, password } = req.body;
-
-    // Encrypting the password
-    const hashPassword = await bcrypt.hash(password, 10);
-    console.log(hashPassword);
-
-    // Creating a new instance of the User Model
-    const user = new User({
-      firstName,
-      lastName,
-      emailId,
-      password: hashPassword,
-    });
-
-    await user.save();
-    res.send("User Added Successfully");
-  } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
-  }
-});
-
-// Login Api for the user
-app.post("/login", async (req, res) => {
-  try {
-    const { emailId, password } = req.body;
-    const user = await User.findOne({ emailId: emailId });
-    if (!user) {
-      throw new Error("Invalid credentials");
-    }
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) {
-      throw new Error("Invalid credentials");
-    }
-    res.send("Login Successful");
-  } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
-  }
-});
 
 // Feed Api for getting the all users from the database
 app.get("/feed", async (req, res) => {
