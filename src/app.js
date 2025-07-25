@@ -13,7 +13,7 @@ commonly used to handle JSON data sent in POST requests, allowing you to access 
 JSON data in your Express routes. */
 app.use(
   cors({
-    origin: "https://your-frontend-url.vercel.app",
+    origin: "https://dev-tinder-five-ebon.vercel.app",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     // allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
