@@ -1,5 +1,5 @@
 const express = require("express");
-
+const cors = require("cors");
 const connectDB = require("./config/database");
 const User = require("./models/user");
 const app = express();
@@ -11,8 +11,22 @@ incoming requests with JSON payloads. This middleware function parses incoming r
 makes the parsed JSON data available on the `req.body` property of the request object. This is
 commonly used to handle JSON data sent in POST requests, allowing you to access and work with the
 JSON data in your Express routes. */
+app.use(
+  cors({
+    origin: "https://your-frontend-url.vercel.app",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    // allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
+// app.options("*", (req, res) => {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.sendStatus(200);
+// });
 
 const { authRouter } = require("./routes/authRoute");
 const { profileRouter } = require("./routes/profile");

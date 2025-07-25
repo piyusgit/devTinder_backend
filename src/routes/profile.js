@@ -24,11 +24,16 @@ router.get("/profile/view", userAuth, async (req, res) => {
 
 // Api for updating the user data in the database
 router.patch("/profile/edit", userAuth, async (req, res) => {
+  // console.log(req.body);
   try {
     if (!validateEditData(req)) {
       throw new Error("Request body contain non allowed field");
     }
-    if (req.body?.skills.length > 10) {
+    if (
+      req.body.skills &&
+      Array.isArray(req.body.skills) &&
+      req.body.skills.length > 10
+    ) {
       throw new Error("Skills can't be more than 10");
     }
 
@@ -40,6 +45,7 @@ router.patch("/profile/edit", userAuth, async (req, res) => {
 
     res.json({ message: "Profile updated successfully", data: loggedUser });
   } catch (err) {
+    console.log(err);
     res.status(400).send("ERROR: " + err.message);
   }
 });
