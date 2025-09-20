@@ -34,7 +34,11 @@ router.post("/signup", async (req, res) => {
     const token = await user.getJWT();
 
     // Add the token to cookie and send the response back to user
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
     res.json({ message: "User Added Successfully", data: savedUser });
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
@@ -57,7 +61,11 @@ router.post("/login", async (req, res) => {
     const token = await user.getJWT();
 
     // Add the token to cookie and send the response back to user
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
     res.send(user);
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
