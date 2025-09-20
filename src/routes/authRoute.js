@@ -6,12 +6,6 @@ const { validateSignUpData } = require("../utils/validation");
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
-  // const user = new User({
-  //   firstName: "John",
-  //   lastName: "Doe",
-  //   emailId: "demo@example.com",
-  //   password: "demo@example.com",
-  // });
   try {
     // Validating the data
     validateSignUpData(req);
